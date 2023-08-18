@@ -1,8 +1,9 @@
 import path from 'path';
-import requestIp from 'request-ip';
+import { getClientIp } from 'request-ip';
 import { browserName, detectOS } from 'detect-browser';
 import isLocalhost from 'is-localhost-ip';
 import maxmind from 'maxmind';
+import { safeDecodeURIComponent } from 'next-basics';
 
 import {
   DESKTOP_OS,
@@ -25,7 +26,7 @@ export function getIpAddress(req) {
     return req.headers['cf-connecting-ip'];
   }
 
-  return requestIp.getClientIp(req);
+  return getClientIp(req);
 }
 
 export function getDevice(screen, os) {
@@ -62,15 +63,21 @@ export async function getLocation(ip, req) {
     return;
   }
 
-  if (req.headers['x-vercel-ip-country']) {
-    const country = req.headers['x-vercel-ip-country'];
-    const region = req.headers['x-vercel-ip-country-region'];
-    const city = req.headers['x-vercel-ip-city'];
-
+  // Cloudflare headers
+  if (req.headers['cf-ipcountry']) {
     return {
-      country,
-      subdivision1: region,
-      city: city ? decodeURIComponent(city) : undefined,
+      country: safeDecodeURIComponent(req.headers['cf-ipcountry']),
+      subdivision1: safeDecodeURIComponent(req.headers['cf-region-code']),
+      city: safeDecodeURIComponent(req.headers['cf-ipcity']),
+    };
+  }
+
+  // Vercel headers
+  if (req.headers['x-vercel-ip-country']) {
+    return {
+      country: safeDecodeURIComponent(req.headers['x-vercel-ip-country']),
+      subdivision1: safeDecodeURIComponent(req.headers['x-vercel-ip-country-region']),
+      city: safeDecodeURIComponent(req.headers['x-vercel-ip-city']),
     };
   }
 

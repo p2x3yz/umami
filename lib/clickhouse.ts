@@ -2,9 +2,10 @@ import { ClickHouse } from 'clickhouse';
 import dateFormat from 'dateformat';
 import debug from 'debug';
 import { CLICKHOUSE } from 'lib/db';
-import { getDynamicDataType } from './dynamicData';
-import { WebsiteMetricFilter } from './types';
-import { FILTER_COLUMNS } from './constants';
+import { QueryFilters, QueryOptions } from './types';
+import { FILTER_COLUMNS, OPERATORS } from './constants';
+import { loadWebsite } from './load';
+import { maxDate } from './date';
 
 export const CLICKHOUSE_DATE_FORMATS = {
   minute: '%Y-%m-%d %H:%M:00',
@@ -62,57 +63,29 @@ function getDateFormat(date) {
   return `'${dateFormat(date, 'UTC:yyyy-mm-dd HH:MM:ss')}'`;
 }
 
-function getBetweenDates(field, startAt, endAt) {
-  return `${field} between ${getDateFormat(startAt)} and ${getDateFormat(endAt)}`;
+function mapFilter(column, operator, name, type = 'String') {
+  switch (operator) {
+    case OPERATORS.equals:
+      return `${column} = {${name}:${type}}`;
+    case OPERATORS.notEquals:
+      return `${column} != {${name}:${type}}`;
+    default:
+      return '';
+  }
 }
 
-function getEventDataFilterQuery(
-  filters: {
-    eventKey?: string;
-    eventValue?: string | number | boolean | Date;
-  }[] = [],
-  params: any,
-) {
-  const query = filters.reduce((ac, cv, i) => {
-    const type = getDynamicDataType(cv.eventValue);
+function getFilterQuery(filters: QueryFilters = {}, options: QueryOptions = {}) {
+  const query = Object.keys(filters).reduce((arr, name) => {
+    const value = filters[name];
+    const operator = value?.filter ?? OPERATORS.equals;
+    const column = FILTER_COLUMNS[name] ?? options?.columns?.[name];
 
-    let value = cv.eventValue;
+    if (value !== undefined && column) {
+      arr.push(`and ${mapFilter(column, operator, name)}`);
 
-    ac.push(`and (event_key = {eventKey${i}:String}`);
-
-    switch (type) {
-      case 'number':
-        ac.push(`and number_value = {eventValue${i}:UInt64})`);
-        break;
-      case 'string':
-        ac.push(`and string_value = {eventValue${i}:String})`);
-        break;
-      case 'boolean':
-        ac.push(`and string_value = {eventValue${i}:String})`);
-        value = cv ? 'true' : 'false';
-        break;
-      case 'date':
-        ac.push(`and date_value = {eventValue${i}:DateTime('UTC')})`);
-        break;
-    }
-
-    params[`eventKey${i}`] = cv.eventKey;
-    params[`eventValue${i}`] = value;
-
-    return ac;
-  }, []);
-
-  return query.join('\n');
-}
-
-function getFilterQuery(filters = {}, params = {}) {
-  const query = Object.keys(filters).reduce((arr, key) => {
-    const filter = filters[key];
-
-    if (filter !== undefined) {
-      const column = FILTER_COLUMNS[key] || key;
-      arr.push(`and ${column} = {${key}:String}`);
-      params[key] = decodeURIComponent(filter);
+      if (name === 'referrer') {
+        arr.push('and referrer_domain != {websiteDomain:String}');
+      }
     }
 
     return arr;
@@ -121,36 +94,31 @@ function getFilterQuery(filters = {}, params = {}) {
   return query.join('\n');
 }
 
-function getFunnelQuery(urls: string[]): {
-  columnsQuery: string;
-  conditionQuery: string;
-  urlParams: { [key: string]: string };
-} {
-  return urls.reduce(
-    (pv, cv, i) => {
-      pv.columnsQuery += `\n,url_path = {url${i}:String}${
-        i > 0 && urls[i - 1] ? ` AND referrer_path = {url${i - 1}:String}` : ''
-      }`;
-      pv.conditionQuery += `${i > 0 ? ',' : ''} {url${i}:String}`;
-      pv.urlParams[`url${i}`] = cv;
+function normalizeFilters(filters = {}) {
+  return Object.keys(filters).reduce((obj, key) => {
+    const value = filters[key];
 
-      return pv;
-    },
-    {
-      columnsQuery: '',
-      conditionQuery: '',
-      urlParams: {},
-    },
-  );
+    obj[key] = value?.value ?? value;
+
+    return obj;
+  }, {});
 }
 
-function parseFilters(filters: WebsiteMetricFilter = {}, params: any = {}) {
+async function parseFilters(websiteId: string, filters: QueryFilters = {}, options?: QueryOptions) {
+  const website = await loadWebsite(websiteId);
+
   return {
-    filterQuery: getFilterQuery(filters, params),
+    filterQuery: getFilterQuery(filters, options),
+    params: {
+      ...normalizeFilters(filters),
+      websiteId,
+      startDate: maxDate(filters.startDate, website.resetAt),
+      websiteDomain: website.domain,
+    },
   };
 }
 
-async function rawQuery<T>(query, params = {}): Promise<T> {
+async function rawQuery<T>(query: string, params: object = {}): Promise<T> {
   if (process.env.LOG_QUERY) {
     log('QUERY:\n', query);
     log('PARAMETERS:\n', params);
@@ -166,7 +134,7 @@ async function findUnique(data) {
     throw `${data.length} records found when expecting 1.`;
   }
 
-  return data[0] ?? null;
+  return findFirst(data);
 }
 
 async function findFirst(data) {
@@ -189,10 +157,7 @@ export default {
   getDateStringQuery,
   getDateQuery,
   getDateFormat,
-  getBetweenDates,
   getFilterQuery,
-  getFunnelQuery,
-  getEventDataFilterQuery,
   parseFilters,
   findUnique,
   findFirst,

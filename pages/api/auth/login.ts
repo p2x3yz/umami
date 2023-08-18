@@ -7,9 +7,10 @@ import {
   checkPassword,
   createSecureToken,
   methodNotAllowed,
+  forbidden,
 } from 'next-basics';
 import redis from '@umami/redis-client';
-import { getUser } from 'queries';
+import { getUserByUsername } from 'queries';
 import { secret } from 'lib/crypto';
 import { NextApiRequestQueryBody, User } from 'lib/types';
 import { setAuthKey } from 'lib/auth';
@@ -30,6 +31,10 @@ export default async (
   req: NextApiRequestQueryBody<any, LoginRequestBody>,
   res: NextApiResponse<LoginResponse>,
 ) => {
+  if (process.env.DISABLE_LOGIN) {
+    return forbidden(res);
+  }
+
   if (req.method === 'POST') {
     const { username, password } = req.body;
 
@@ -37,7 +42,7 @@ export default async (
       return badRequest(res);
     }
 
-    const user = await getUser({ username }, { includePassword: true });
+    const user = await getUserByUsername(username, { includePassword: true });
 
     if (user && checkPassword(password, user.password)) {
       if (redis.enabled) {

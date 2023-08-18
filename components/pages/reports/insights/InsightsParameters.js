@@ -1,92 +1,104 @@
 import { useContext, useRef } from 'react';
-import { useApi, useMessages } from 'hooks';
-import { Form, FormRow, FormButtons, SubmitButton, PopupTrigger, Icon, Popup } from 'react-basics';
+import { useFormat, useMessages, useFilters } from 'hooks';
+import {
+  Form,
+  FormRow,
+  FormButtons,
+  SubmitButton,
+  PopupTrigger,
+  Icon,
+  Popup,
+  TooltipPopup,
+} from 'react-basics';
 import { ReportContext } from 'components/pages/reports/Report';
-import Empty from 'components/common/Empty';
-import { DATA_TYPES, REPORT_PARAMETERS } from 'lib/constants';
 import Icons from 'components/icons';
-import FieldAddForm from './FieldAddForm';
 import BaseParameters from '../BaseParameters';
 import ParameterList from '../ParameterList';
 import styles from './InsightsParameters.module.css';
-
-function useFields(websiteId, startDate, endDate) {
-  const { get, useQuery } = useApi();
-  const { data, error, isLoading } = useQuery(
-    ['fields', websiteId, startDate, endDate],
-    () =>
-      get('/reports/event-data', {
-        websiteId,
-        startAt: +startDate,
-        endAt: +endDate,
-      }),
-    { enabled: !!(websiteId && startDate && endDate) },
-  );
-
-  return { data, error, isLoading };
-}
+import PopupForm from '../PopupForm';
+import FilterSelectForm from '../FilterSelectForm';
+import FieldSelectForm from '../FieldSelectForm';
 
 export function InsightsParameters() {
   const { report, runReport, updateReport, isRunning } = useContext(ReportContext);
-  const { formatMessage, labels, messages } = useMessages();
+  const { formatMessage, labels } = useMessages();
+  const { formatValue } = useFormat();
+  const { filterLabels } = useFilters();
   const ref = useRef(null);
   const { parameters } = report || {};
-  const { websiteId, dateRange, fields, filters, groups } = parameters || {};
+  const { websiteId, dateRange, fields, filters } = parameters || {};
   const { startDate, endDate } = dateRange || {};
-  const queryEnabled = websiteId && dateRange && fields?.length;
-  const { data, error } = useFields(websiteId, startDate, endDate);
   const parametersSelected = websiteId && startDate && endDate;
-  const hasData = data?.length !== 0;
+  const queryEnabled = websiteId && dateRange && (fields?.length || filters?.length);
+
+  const fieldOptions = [
+    { name: 'url', type: 'string', label: formatMessage(labels.url) },
+    { name: 'title', type: 'string', label: formatMessage(labels.pageTitle) },
+    { name: 'referrer', type: 'string', label: formatMessage(labels.referrer) },
+    { name: 'query', type: 'string', label: formatMessage(labels.query) },
+    { name: 'browser', type: 'string', label: formatMessage(labels.browser) },
+    { name: 'os', type: 'string', label: formatMessage(labels.os) },
+    { name: 'device', type: 'string', label: formatMessage(labels.device) },
+    { name: 'country', type: 'string', label: formatMessage(labels.country) },
+    { name: 'region', type: 'string', label: formatMessage(labels.region) },
+    { name: 'city', type: 'string', label: formatMessage(labels.city) },
+  ];
 
   const parameterGroups = [
-    { label: formatMessage(labels.fields), group: REPORT_PARAMETERS.fields },
-    { label: formatMessage(labels.filters), group: REPORT_PARAMETERS.filters },
-    { label: formatMessage(labels.breakdown), group: REPORT_PARAMETERS.groups },
+    { id: 'fields', label: formatMessage(labels.fields) },
+    { id: 'filters', label: formatMessage(labels.filters) },
   ];
 
   const parameterData = {
     fields,
     filters,
-    groups,
   };
 
   const handleSubmit = values => {
     runReport(values);
   };
 
-  const handleAdd = (group, value) => {
-    const data = parameterData[group];
+  const handleAdd = (id, value) => {
+    const data = parameterData[id];
 
     if (!data.find(({ name }) => name === value.name)) {
-      updateReport({ parameters: { [group]: data.concat(value) } });
+      updateReport({ parameters: { [id]: data.concat(value) } });
     }
   };
 
-  const handleRemove = (group, index) => {
-    const data = [...parameterData[group]];
+  const handleRemove = (id, index) => {
+    const data = [...parameterData[id]];
     data.splice(index, 1);
-    updateReport({ parameters: { [group]: data } });
+    updateReport({ parameters: { [id]: data } });
   };
 
-  const AddButton = ({ group }) => {
+  const AddButton = ({ id }) => {
     return (
       <PopupTrigger>
-        <Icon>
-          <Icons.Plus />
-        </Icon>
-        <Popup position="bottom" alignment="start">
-          {(close, element) => {
+        <TooltipPopup label={formatMessage(labels.add)} position="top">
+          <Icon>
+            <Icons.Plus />
+          </Icon>
+        </TooltipPopup>
+        <Popup position="bottom" alignment="start" className={styles.popup}>
+          {close => {
             return (
-              <FieldAddForm
-                fields={data.map(({ eventKey, InsightsType }) => ({
-                  name: eventKey,
-                  type: DATA_TYPES[InsightsType],
-                }))}
-                group={group}
-                element={element}
-                onAdd={handleAdd}
-                onClose={close}
-              />
+              <PopupForm onClose={close}>
+                {id === 'fields' && (
+                  <FieldSelectForm
+                    items={fieldOptions}
+                    onSelect={handleAdd.bind(null, id)}
+                    showType={false}
+                  />
+                )}
+                {id === 'filters' && (
+                  <FilterSelectForm
+                    websiteId={websiteId}
+                    items={fieldOptions}
+                    onSelect={handleAdd.bind(null, id)}
+                  />
+                )}
+              </PopupForm>
             );
           }}
         </Popup>
@@ -95,41 +107,26 @@ export function InsightsParameters() {
   };
 
   return (
-    <Form ref={ref} values={parameters} error={error} onSubmit={handleSubmit}>
+    <Form ref={ref} values={parameters} onSubmit={handleSubmit}>
       <BaseParameters />
-      {!hasData && <Empty message={formatMessage(messages.noInsights)} />}
       {parametersSelected &&
-        hasData &&
-        parameterGroups.map(({ label, group }) => {
+        parameterGroups.map(({ id, label }) => {
           return (
-            <FormRow
-              key={label}
-              label={label}
-              action={<AddButton group={group} onAdd={handleAdd} />}
-            >
-              <ParameterList
-                items={parameterData[group]}
-                onRemove={index => handleRemove(group, index)}
-              >
-                {({ name, value }) => {
+            <FormRow key={label} label={label} action={<AddButton id={id} onAdd={handleAdd} />}>
+              <ParameterList items={parameterData[id]} onRemove={index => handleRemove(id, index)}>
+                {({ name, filter, value }) => {
                   return (
                     <div className={styles.parameter}>
-                      {group === REPORT_PARAMETERS.fields && (
+                      {id === 'fields' && (
                         <>
-                          <div>{name}</div>
-                          <div className={styles.op}>{value}</div>
+                          <div>{fieldOptions.find(f => f.name === name)?.label}</div>
                         </>
                       )}
-                      {group === REPORT_PARAMETERS.filters && (
+                      {id === 'filters' && (
                         <>
-                          <div>{name}</div>
-                          <div className={styles.op}>{value[0]}</div>
-                          <div>{value[1]}</div>
-                        </>
-                      )}
-                      {group === REPORT_PARAMETERS.groups && (
-                        <>
-                          <div>{name}</div>
+                          <div>{fieldOptions.find(f => f.name === name)?.label}</div>
+                          <div className={styles.op}>{filterLabels[filter]}</div>
+                          <div>{formatValue(value, name)}</div>
                         </>
                       )}
                     </div>

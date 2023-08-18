@@ -1,10 +1,13 @@
 import { canCreateWebsite } from 'lib/auth';
 import { uuid } from 'lib/crypto';
 import { useAuth, useCors } from 'lib/middleware';
-import { NextApiRequestQueryBody } from 'lib/types';
+import { NextApiRequestQueryBody, SearchFilter, WebsiteSearchFilterType } from 'lib/types';
 import { NextApiResponse } from 'next';
 import { methodNotAllowed, ok, unauthorized } from 'next-basics';
-import { createWebsite, getUserWebsites } from 'queries';
+import { createWebsite } from 'queries';
+import userWebsites from 'pages/api/users/[id]/websites';
+
+export interface WebsitesRequestQuery extends SearchFilter<WebsiteSearchFilterType> {}
 
 export interface WebsitesRequestBody {
   name: string;
@@ -13,7 +16,7 @@ export interface WebsitesRequestBody {
 }
 
 export default async (
-  req: NextApiRequestQueryBody<any, WebsitesRequestBody>,
+  req: NextApiRequestQueryBody<WebsitesRequestQuery, WebsitesRequestBody>,
   res: NextApiResponse,
 ) => {
   await useCors(req, res);
@@ -24,9 +27,10 @@ export default async (
   } = req.auth;
 
   if (req.method === 'GET') {
-    const websites = await getUserWebsites(userId);
+    req.query.id = userId;
+    req.query.pageSize = 100;
 
-    return ok(res, websites);
+    return userWebsites(req, res);
   }
 
   if (req.method === 'POST') {

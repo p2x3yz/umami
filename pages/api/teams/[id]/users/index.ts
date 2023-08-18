@@ -1,11 +1,11 @@
 import { canUpdateTeam, canViewTeam } from 'lib/auth';
 import { useAuth } from 'lib/middleware';
-import { NextApiRequestQueryBody } from 'lib/types';
+import { NextApiRequestQueryBody, SearchFilter, TeamSearchFilterType } from 'lib/types';
 import { NextApiResponse } from 'next';
 import { badRequest, methodNotAllowed, ok, unauthorized } from 'next-basics';
-import { createTeamUser, getTeamUsers, getUser } from 'queries';
+import { createTeamUser, getUserByUsername, getUsersByTeamId } from 'queries';
 
-export interface TeamUserRequestQuery {
+export interface TeamUserRequestQuery extends SearchFilter<TeamSearchFilterType> {
   id: string;
 }
 
@@ -27,7 +27,13 @@ export default async (
       return unauthorized(res);
     }
 
-    const users = await getTeamUsers(teamId);
+    const { page, filter, pageSize } = req.query;
+
+    const users = await getUsersByTeamId(teamId, {
+      page,
+      filter,
+      pageSize: +pageSize || null,
+    });
 
     return ok(res, users);
   }
@@ -40,7 +46,7 @@ export default async (
     const { email, roleId: roleId } = req.body;
 
     // Check for User
-    const user = await getUser({ username: email });
+    const user = await getUserByUsername(email);
 
     if (!user) {
       return badRequest(res, 'The User does not exists.');

@@ -13,12 +13,12 @@ export const REPO_URL = 'https://github.com/umami-software/umami';
 export const UPDATES_URL = 'https://api.umami.is/v1/updates';
 export const TELEMETRY_PIXEL = 'https://i.umami.is/a.png';
 
-export const DEFAULT_LOCALE = 'en-US';
+export const DEFAULT_LOCALE = process.env.defaultLocale ?? 'en-US';
 export const DEFAULT_THEME = 'light';
 export const DEFAULT_ANIMATION_DURATION = 300;
 export const DEFAULT_DATE_RANGE = '24hour';
 export const DEFAULT_WEBSITE_LIMIT = 10;
-export const DEFAULT_CREATED_AT = '2000-01-01';
+export const DEFAULT_RESET_DATE = '2000-01-01';
 
 export const REALTIME_RANGE = 30;
 export const REALTIME_INTERVAL = 5000;
@@ -29,6 +29,22 @@ export const FILTER_DAY = 'filter-day';
 export const FILTER_RANGE = 'filter-range';
 export const FILTER_REFERRERS = 'filter-referrers';
 export const FILTER_PAGES = 'filter-pages';
+
+export const USER_FILTER_TYPES = {
+  all: 'All',
+  username: 'Username',
+} as const;
+export const WEBSITE_FILTER_TYPES = { all: 'All', name: 'Name', domain: 'Domain' } as const;
+export const TEAM_FILTER_TYPES = { all: 'All', name: 'Name', 'user:username': 'Owner' } as const;
+export const REPORT_FILTER_TYPES = {
+  all: 'All',
+  name: 'Name',
+  description: 'Description',
+  type: 'Type',
+  'user:username': 'Username',
+  'website:name': 'Website Name',
+  'website:domain': 'Website Domain',
+} as const;
 
 export const EVENT_COLUMNS = ['url', 'referrer', 'title', 'query', 'event'];
 
@@ -43,18 +59,24 @@ export const SESSION_COLUMNS = [
   'city',
 ];
 
-export const COLLECTION_TYPE = {
-  event: 'event',
-  identify: 'identify',
-};
-
 export const FILTER_COLUMNS = {
   url: 'url_path',
   referrer: 'referrer_domain',
   title: 'page_title',
   query: 'url_query',
-  event: 'event_name',
+  os: 'os',
+  browser: 'browser',
+  device: 'device',
+  country: 'country',
   region: 'subdivision1',
+  city: 'city',
+  language: 'language',
+  event: 'event_name',
+};
+
+export const COLLECTION_TYPE = {
+  event: 'event',
+  identify: 'identify',
 };
 
 export const EVENT_TYPE = {
@@ -70,6 +92,23 @@ export const DATA_TYPE = {
   array: 5,
 } as const;
 
+export const OPERATORS = {
+  equals: 'eq',
+  notEquals: 'neq',
+  set: 's',
+  notSet: 'ns',
+  contains: 'c',
+  doesNotContain: 'dnc',
+  true: 't',
+  false: 'f',
+  greaterThan: 'gt',
+  lessThan: 'lt',
+  greaterThanEquals: 'gte',
+  lessThanEquals: 'lte',
+  before: 'bf',
+  after: 'af',
+} as const;
+
 export const DATA_TYPES = {
   [DATA_TYPE.string]: 'string',
   [DATA_TYPE.number]: 'number',
@@ -77,6 +116,12 @@ export const DATA_TYPES = {
   [DATA_TYPE.date]: 'date',
   [DATA_TYPE.array]: 'array',
 };
+
+export const REPORT_TYPES = {
+  funnel: 'funnel',
+  insights: 'insights',
+  retention: 'retention',
+} as const;
 
 export const REPORT_PARAMETERS = {
   fields: 'fields',
@@ -166,11 +211,13 @@ export const EVENT_COLORS = [
   '#ffec16',
 ];
 
-export const DOMAIN_REGEX = 
+export const DOMAIN_REGEX =
   /^(localhost(:[1-9]\d{0,4})?|((?=[a-z0-9-]{1,63}\.)(xn--)?[a-z0-9-]+(-[a-z0-9-]+)*\.)+(xn--)?[a-z0-9-]{2,63})$/;
-
-
 export const SHARE_ID_REGEX = /^[a-zA-Z0-9]{16}$/;
+export const UUID_REGEX =
+  /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/;
+export const HOSTNAME_REGEX =
+  /^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9-]*[A-Za-z0-9])$/;
 
 export const DESKTOP_SCREEN_WIDTH = 1920;
 export const LAPTOP_SCREEN_WIDTH = 1024;

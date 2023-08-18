@@ -1,10 +1,11 @@
 import { NextApiResponse } from 'next';
-import { methodNotAllowed, ok, unauthorized } from 'next-basics';
+import { badRequest, methodNotAllowed, ok, unauthorized } from 'next-basics';
 import { WebsiteMetric, NextApiRequestQueryBody } from 'lib/types';
 import { canViewWebsite } from 'lib/auth';
 import { useAuth, useCors } from 'lib/middleware';
 import { SESSION_COLUMNS, EVENT_COLUMNS, FILTER_COLUMNS } from 'lib/constants';
 import { getPageviewMetrics, getSessionMetrics } from 'queries';
+import { parseDateRangeQuery } from 'lib/query';
 
 export interface WebsiteMetricsRequestQuery {
   id: string;
@@ -22,6 +23,7 @@ export interface WebsiteMetricsRequestQuery {
   country: string;
   region: string;
   city: string;
+  language: string;
 }
 
 export default async (
@@ -34,8 +36,6 @@ export default async (
   const {
     id: websiteId,
     type,
-    startAt,
-    endAt,
     url,
     referrer,
     title,
@@ -47,6 +47,7 @@ export default async (
     country,
     region,
     city,
+    language,
   } = req.query;
 
   if (req.method === 'GET') {
@@ -54,28 +55,31 @@ export default async (
       return unauthorized(res);
     }
 
-    const startDate = new Date(+startAt);
-    const endDate = new Date(+endAt);
+    const { startDate, endDate } = await parseDateRangeQuery(req);
+
+    const filters = {
+      startDate,
+      endDate,
+      url,
+      referrer,
+      title,
+      query,
+      event,
+      os,
+      browser,
+      device,
+      country,
+      region,
+      city,
+      language,
+    };
+
+    filters[type] = undefined;
+
+    const column = FILTER_COLUMNS[type] || type;
 
     if (SESSION_COLUMNS.includes(type)) {
-      const column = FILTER_COLUMNS[type] || type;
-      const filters = {
-        os,
-        browser,
-        device,
-        country,
-        region,
-        city,
-      };
-
-      filters[type] = undefined;
-
-      let data = await getSessionMetrics(websiteId, {
-        startDate,
-        endDate,
-        column,
-        filters,
-      });
+      const data = await getSessionMetrics(websiteId, column, filters);
 
       if (type === 'language') {
         const combined = {};
@@ -90,39 +94,19 @@ export default async (
           }
         }
 
-        data = Object.values(combined);
+        return ok(res, Object.values(combined));
       }
 
       return ok(res, data);
     }
 
     if (EVENT_COLUMNS.includes(type)) {
-      const column = FILTER_COLUMNS[type] || type;
-      const filters = {
-        url,
-        referrer,
-        title,
-        query,
-        event,
-        os,
-        browser,
-        device,
-        country,
-        region,
-        city,
-      };
-
-      filters[type] = undefined;
-
-      const data = await getPageviewMetrics(websiteId, {
-        startDate,
-        endDate,
-        column,
-        filters,
-      });
+      const data = await getPageviewMetrics(websiteId, column, filters);
 
       return ok(res, data);
     }
+
+    return badRequest(res);
   }
 
   return methodNotAllowed(res);

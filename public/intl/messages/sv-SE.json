@@ -17,6 +17,18 @@
       "value": "Aktivitetslogg"
     }
   ],
+  "label.add": [
+    {
+      "type": 0,
+      "value": "Add"
+    }
+  ],
+  "label.add-description": [
+    {
+      "type": 0,
+      "value": "Add description"
+    }
+  ],
   "label.add-website": [
     {
       "type": 0,
@@ -27,6 +39,12 @@
     {
       "type": 0,
       "value": "Administratör"
+    }
+  ],
+  "label.after": [
+    {
+      "type": 0,
+      "value": "After"
     }
   ],
   "label.all": [
@@ -47,6 +65,12 @@
       "value": "Analys"
     }
   ],
+  "label.average": [
+    {
+      "type": 0,
+      "value": "Average"
+    }
+  ],
   "label.average-visit-time": [
     {
       "type": 0,
@@ -59,10 +83,28 @@
       "value": "Tillbaka"
     }
   ],
+  "label.before": [
+    {
+      "type": 0,
+      "value": "Before"
+    }
+  ],
   "label.bounce-rate": [
     {
       "type": 0,
       "value": "Avvisningfrekvens"
+    }
+  ],
+  "label.breakdown": [
+    {
+      "type": 0,
+      "value": "Breakdown"
+    }
+  ],
+  "label.browser": [
+    {
+      "type": 0,
+      "value": "Browser"
     }
   ],
   "label.browsers": [
@@ -89,6 +131,12 @@
       "value": "Städer"
     }
   ],
+  "label.city": [
+    {
+      "type": 0,
+      "value": "City"
+    }
+  ],
   "label.clear-all": [
     {
       "type": 0,
@@ -107,6 +155,12 @@
       "value": "Bekräfta lösenord"
     }
   ],
+  "label.contains": [
+    {
+      "type": 0,
+      "value": "Contains"
+    }
+  ],
   "label.continue": [
     {
       "type": 0,
@@ -117,6 +171,18 @@
     {
       "type": 0,
       "value": "Länder"
+    }
+  ],
+  "label.country": [
+    {
+      "type": 0,
+      "value": "Country"
+    }
+  ],
+  "label.create-report": [
+    {
+      "type": 0,
+      "value": "Create report"
     }
   ],
   "label.create-team": [
@@ -161,10 +227,22 @@
       "value": "Data"
     }
   ],
+  "label.date": [
+    {
+      "type": 0,
+      "value": "Date"
+    }
+  ],
   "label.date-range": [
     {
       "type": 0,
       "value": "Datumomfång"
+    }
+  ],
+  "label.day": [
+    {
+      "type": 0,
+      "value": "Day"
     }
   ],
   "label.default-date-range": [
@@ -197,6 +275,12 @@
       "value": "Radera webbsajt"
     }
   ],
+  "label.description": [
+    {
+      "type": 0,
+      "value": "Description"
+    }
+  ],
   "label.desktop": [
     {
       "type": 0,
@@ -207,6 +291,12 @@
     {
       "type": 0,
       "value": "Detailjer"
+    }
+  ],
+  "label.device": [
+    {
+      "type": 0,
+      "value": "Device"
     }
   ],
   "label.devices": [
@@ -221,10 +311,22 @@
       "value": "Avbryt"
     }
   ],
+  "label.does-not-contain": [
+    {
+      "type": 0,
+      "value": "Does not contain"
+    }
+  ],
   "label.domain": [
     {
       "type": 0,
       "value": "Domän"
+    }
+  ],
+  "label.dropoff": [
+    {
+      "type": 0,
+      "value": "Dropoff"
     }
   ],
   "label.edit": [
@@ -245,6 +347,12 @@
       "value": "Aktivera delnings-URL"
     }
   ],
+  "label.event": [
+    {
+      "type": 0,
+      "value": "Event"
+    }
+  ],
   "label.event-data": [
     {
       "type": 0,
@@ -255,6 +363,24 @@
     {
       "type": 0,
       "value": "Händelser"
+    }
+  ],
+  "label.false": [
+    {
+      "type": 0,
+      "value": "False"
+    }
+  ],
+  "label.field": [
+    {
+      "type": 0,
+      "value": "Field"
+    }
+  ],
+  "label.fields": [
+    {
+      "type": 0,
+      "value": "Fields"
     }
   ],
   "label.filter-combined": [
@@ -269,10 +395,58 @@
       "value": "Rådata"
     }
   ],
+  "label.filters": [
+    {
+      "type": 0,
+      "value": "Filters"
+    }
+  ],
   "label.funnel": [
     {
       "type": 0,
       "value": "Funnel"
+    }
+  ],
+  "label.greater-than": [
+    {
+      "type": 0,
+      "value": "Greater than"
+    }
+  ],
+  "label.greater-than-equals": [
+    {
+      "type": 0,
+      "value": "Greater than or equals"
+    }
+  ],
+  "label.insights": [
+    {
+      "type": 0,
+      "value": "Insights"
+    }
+  ],
+  "label.is": [
+    {
+      "type": 0,
+      "value": "Is"
+    }
+  ],
+  "label.is-not": [
+    {
+      "type": 0,
+      "value": "Is not"
+    }
+  ],
+  "label.is-not-set": [
+    {
+      "type": 0,
+      "value": "Is not set"
+    }
+  ],
+  "label.is-set": [
+    {
+      "type": 0,
+      "value": "Is set"
     }
   ],
   "label.join": [
@@ -345,6 +519,18 @@
       "value": "Lämna team"
     }
   ],
+  "label.less-than": [
+    {
+      "type": 0,
+      "value": "Less than"
+    }
+  ],
+  "label.less-than-equals": [
+    {
+      "type": 0,
+      "value": "Less than or equals"
+    }
+  ],
   "label.login": [
     {
       "type": 0,
@@ -357,10 +543,22 @@
       "value": "Logga ut"
     }
   ],
+  "label.max": [
+    {
+      "type": 0,
+      "value": "Max"
+    }
+  ],
   "label.members": [
     {
       "type": 0,
       "value": "Medlemmar"
+    }
+  ],
+  "label.min": [
+    {
+      "type": 0,
+      "value": "Min"
     }
   ],
   "label.mobile": [
@@ -373,6 +571,12 @@
     {
       "type": 0,
       "value": "Mer"
+    }
+  ],
+  "label.my-websites": [
+    {
+      "type": 0,
+      "value": "My websites"
     }
   ],
   "label.name": [
@@ -393,10 +597,16 @@
       "value": "Inga"
     }
   ],
-  "label.operating-systems": [
+  "label.os": [
     {
       "type": 0,
-      "value": "Operativsystem"
+      "value": "OS"
+    }
+  ],
+  "label.overview": [
+    {
+      "type": 0,
+      "value": "Overview"
     }
   ],
   "label.owner": [
@@ -405,10 +615,34 @@
       "value": "Ägare"
     }
   ],
+  "label.page-of": [
+    {
+      "type": 0,
+      "value": "Page "
+    },
+    {
+      "type": 1,
+      "value": "current"
+    },
+    {
+      "type": 0,
+      "value": " of "
+    },
+    {
+      "type": 1,
+      "value": "total"
+    }
+  ],
   "label.page-views": [
     {
       "type": 0,
       "value": "Sidvisningar"
+    }
+  ],
+  "label.pageTitle": [
+    {
+      "type": 0,
+      "value": "Page title"
     }
   ],
   "label.pages": [
@@ -463,6 +697,12 @@
       "value": "Realtid"
     }
   ],
+  "label.referrer": [
+    {
+      "type": 0,
+      "value": "Referrer"
+    }
+  ],
   "label.referrers": [
     {
       "type": 0,
@@ -479,6 +719,12 @@
     {
       "type": 0,
       "value": "Regenerera"
+    }
+  ],
+  "label.region": [
+    {
+      "type": 0,
+      "value": "Region"
     }
   ],
   "label.regions": [
@@ -517,10 +763,22 @@
       "value": "Återställ statistik"
     }
   ],
+  "label.retention": [
+    {
+      "type": 0,
+      "value": "Retention"
+    }
+  ],
   "label.role": [
     {
       "type": 0,
       "value": "Roll"
+    }
+  ],
+  "label.run-query": [
+    {
+      "type": 0,
+      "value": "Run query"
     }
   ],
   "label.save": [
@@ -571,6 +829,12 @@
       "value": "En dag"
     }
   ],
+  "label.sum": [
+    {
+      "type": 0,
+      "value": "Sum"
+    }
+  ],
   "label.tablet": [
     {
       "type": 0,
@@ -601,10 +865,22 @@
       "value": "Team-medlem"
     }
   ],
+  "label.team-name": [
+    {
+      "type": 0,
+      "value": "Team name"
+    }
+  ],
   "label.team-owner": [
     {
       "type": 0,
       "value": "Team-ägare"
+    }
+  ],
+  "label.team-websites": [
+    {
+      "type": 0,
+      "value": "Team websites"
     }
   ],
   "label.teams": [
@@ -661,10 +937,40 @@
       "value": "Visa/göm grafer"
     }
   ],
+  "label.total": [
+    {
+      "type": 0,
+      "value": "Total"
+    }
+  ],
+  "label.total-records": [
+    {
+      "type": 0,
+      "value": "Total records"
+    }
+  ],
   "label.tracking-code": [
     {
       "type": 0,
       "value": "Spårningskod"
+    }
+  ],
+  "label.true": [
+    {
+      "type": 0,
+      "value": "True"
+    }
+  ],
+  "label.type": [
+    {
+      "type": 0,
+      "value": "Type"
+    }
+  ],
+  "label.unique": [
+    {
+      "type": 0,
+      "value": "Unique"
     }
   ],
   "label.unique-visitors": [
@@ -677,6 +983,18 @@
     {
       "type": 0,
       "value": "Okänd"
+    }
+  ],
+  "label.untitled": [
+    {
+      "type": 0,
+      "value": "Untitled"
+    }
+  ],
+  "label.url": [
+    {
+      "type": 0,
+      "value": "URL"
     }
   ],
   "label.urls": [
@@ -703,6 +1021,12 @@
       "value": "Users"
     }
   ],
+  "label.value": [
+    {
+      "type": 0,
+      "value": "Value"
+    }
+  ],
   "label.view": [
     {
       "type": 0,
@@ -713,6 +1037,12 @@
     {
       "type": 0,
       "value": "Visa detaljer"
+    }
+  ],
+  "label.view-only": [
+    {
+      "type": 0,
+      "value": "View only"
     }
   ],
   "label.views": [
@@ -743,6 +1073,12 @@
     {
       "type": 0,
       "value": "Webbsajt"
+    }
+  ],
+  "label.window": [
+    {
+      "type": 0,
+      "value": "Window"
     }
   ],
   "label.yesterday": [
@@ -917,16 +1253,48 @@
       "value": " tecken"
     }
   ],
+  "message.new-version-available": [
+    {
+      "type": 0,
+      "value": "A new version of Umami "
+    },
+    {
+      "type": 1,
+      "value": "version"
+    },
+    {
+      "type": 0,
+      "value": " is available!"
+    }
+  ],
   "message.no-data-available": [
     {
       "type": 0,
       "value": "Ingen data tillgänglig."
     }
   ],
+  "message.no-event-data": [
+    {
+      "type": 0,
+      "value": "No event data is available."
+    }
+  ],
   "message.no-match-password": [
     {
       "type": 0,
       "value": "Lösenorden är inte samma"
+    }
+  ],
+  "message.no-results-found": [
+    {
+      "type": 0,
+      "value": "No results were found."
+    }
+  ],
+  "message.no-team-websites": [
+    {
+      "type": 0,
+      "value": "Det här teamet har inga webbsajter."
     }
   ],
   "message.no-teams": [
@@ -939,6 +1307,12 @@
     {
       "type": 0,
       "value": "Det finns inga användare."
+    }
+  ],
+  "message.no-websites-configured": [
+    {
+      "type": 0,
+      "value": "Du har inga webbsajter."
     }
   ],
   "message.page-not-found": [
@@ -999,6 +1373,12 @@
       "value": "Team kan inte hittas."
     }
   ],
+  "message.team-websites-info": [
+    {
+      "type": 0,
+      "value": "Websajter kan ses av alla i teamet."
+    }
+  ],
   "message.tracking-code": [
     {
       "type": 0,
@@ -1043,30 +1423,6 @@
     {
       "type": 1,
       "value": "device"
-    }
-  ],
-  "messages.no-results-found": [
-    {
-      "type": 0,
-      "value": "No results were found."
-    }
-  ],
-  "messages.no-team-websites": [
-    {
-      "type": 0,
-      "value": "Det här teamet har inga webbsajter."
-    }
-  ],
-  "messages.no-websites-configured": [
-    {
-      "type": 0,
-      "value": "Du har inga webbsajter."
-    }
-  ],
-  "messages.team-websites-info": [
-    {
-      "type": 0,
-      "value": "Websajter kan ses av alla i teamet."
     }
   ]
 }

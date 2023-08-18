@@ -1,10 +1,12 @@
+import { canViewWebsite } from 'lib/auth';
 import { uuid } from 'lib/crypto';
 import { useAuth, useCors } from 'lib/middleware';
-import { NextApiRequestQueryBody } from 'lib/types';
+import { NextApiRequestQueryBody, ReportSearchFilterType, SearchFilter } from 'lib/types';
 import { NextApiResponse } from 'next';
 import { methodNotAllowed, ok, unauthorized } from 'next-basics';
-import { createReport, getReports } from 'queries';
-import { canViewWebsite } from 'lib/auth';
+import { createReport, getReportsByUserId, getReportsByWebsiteId } from 'queries';
+
+export interface ReportsRequestQuery extends SearchFilter<ReportSearchFilterType> {}
 
 export interface ReportRequestBody {
   websiteId: string;
@@ -24,18 +26,19 @@ export default async (
   await useCors(req, res);
   await useAuth(req, res);
 
-  const { websiteId } = req.query;
-
   const {
     user: { id: userId },
   } = req.auth;
 
   if (req.method === 'GET') {
-    if (!(websiteId && (await canViewWebsite(req.auth, websiteId)))) {
-      return unauthorized(res);
-    }
+    const { page, filter, pageSize } = req.query;
 
-    const data = await getReports({ websiteId });
+    const data = await getReportsByUserId(userId, {
+      page,
+      filter,
+      pageSize: +pageSize || null,
+      includeTeams: true,
+    });
 
     return ok(res, data);
   }

@@ -1,8 +1,10 @@
+import { subMinutes, differenceInMinutes } from 'date-fns';
+import { NextApiResponse } from 'next';
+import { methodNotAllowed, ok, unauthorized } from 'next-basics';
 import { canViewWebsite } from 'lib/auth';
 import { useAuth, useCors } from 'lib/middleware';
 import { NextApiRequestQueryBody, WebsiteStats } from 'lib/types';
-import { NextApiResponse } from 'next';
-import { methodNotAllowed, ok, unauthorized } from 'next-basics';
+import { parseDateRangeQuery } from 'lib/query';
 import { getWebsiteStats } from 'queries';
 
 export interface WebsiteStatsRequestQuery {
@@ -31,8 +33,6 @@ export default async (
 
   const {
     id: websiteId,
-    startAt,
-    endAt,
     url,
     referrer,
     title,
@@ -51,46 +51,31 @@ export default async (
       return unauthorized(res);
     }
 
-    const startDate = new Date(+startAt);
-    const endDate = new Date(+endAt);
+    const { startDate, endDate } = await parseDateRangeQuery(req);
+    const diff = differenceInMinutes(endDate, startDate);
+    const prevStartDate = subMinutes(startDate, diff);
+    const prevEndDate = subMinutes(endDate, diff);
 
-    const distance = endAt - startAt;
-    const prevStartDate = new Date(+startAt - distance);
-    const prevEndDate = new Date(+endAt - distance);
+    const filters = {
+      url,
+      referrer,
+      title,
+      query,
+      event,
+      os,
+      browser,
+      device,
+      country,
+      region,
+      city,
+    };
 
-    const metrics = await getWebsiteStats(websiteId, {
-      startDate,
-      endDate,
-      filters: {
-        url,
-        referrer,
-        title,
-        query,
-        event,
-        os,
-        browser,
-        device,
-        country,
-        region,
-        city,
-      },
-    });
+    const metrics = await getWebsiteStats(websiteId, { ...filters, startDate, endDate });
+
     const prevPeriod = await getWebsiteStats(websiteId, {
+      ...filters,
       startDate: prevStartDate,
       endDate: prevEndDate,
-      filters: {
-        url,
-        referrer,
-        title,
-        query,
-        event,
-        os,
-        browser,
-        device,
-        country,
-        region,
-        city,
-      },
     });
 
     const stats = Object.keys(metrics[0]).reduce((obj, key) => {
